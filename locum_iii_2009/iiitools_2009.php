@@ -305,15 +305,35 @@ class iiitools {
     $url_suffix = 'patroninfo~S24/' . $this->pnum . '/holds';
     $result = self::my_curl_exec($url_suffix);
 
-    $row_count = preg_match_all('%<tr.+?patFuncEntry.+?>(.+?)</tr>%s', $result['body'], $rowmatch);
-    for ($i = 0; $i < $row_count; $i++) {
-      // Grab all table cells in the Entry
-      $cellmatch = '';
-      $item_data = array();
-      $cell_count = preg_match_all('%<td.+?class="(.+?)".*?>(.+?)</td>%s', $rowmatch[1][$i], $cellmatch);
-      for ($j = 0; $j < $cell_count; $j++) {
-        $item_data[$cellmatch[1][$j]] = $cellmatch[2][$j];
-      }
+    // Original regex broken. Fixed one below, but still fragile solution.
+    // $regex = '%patFuncMark(.+?)name="(.+?)"(.+?)/patroninfo~S5/(.+?)/item&(.+?)">(.+?)</a>(.+?)patFuncStatus">(.+?)</td>(.+?)patFuncPickup">(.+?)</td>(.+?)patFuncCancel">(.+?)</td>(.+?)patFuncFreeze(.+?)</td>%s';
+
+    /**
+     * The HTML to be matched:
+     <tr class="patFuncEntry">
+     <td  class="patFuncMark" align="center">
+     <input type="checkbox" name="cancelb1201131x00" id="cancelb1201131x00" /></td>
+     <td  class="patFuncTitle">
+     <label for="cancelb1201131x00"><a href="/record=b1201131~S0"> Finding George Orwell in Burma / Emma Larkin. </a></label>
+     <br />
+     </td>
+     <td  class="patFuncStatus"> 1 of 1 holds </td>
+     <td class="patFuncPickup">Circulation Desk</td>
+     <td class="patFuncCancel">03-01-11</td>
+     <td  class="patFuncFreeze" align="center">
+     <div  class="patFuncFreezeLabel">
+     <label for="freezeb1201131" >Freeze</label>
+     </div>
+     <input type="checkbox" name="freezeb1201131" /></td>
+     </tr>
+    */
+    $regex = '%patFuncMark.+name="(.+)".*<a href="/record=b(.+)~S0">(.+)</a>.*patFuncStatus">(.+)</td>.*patFuncPickup">(.+)</td>.*patFuncCancel">(.+)</td>.*patFuncFreeze.*<input(.*)/>%sU';
+  
+    $count = preg_match_all($regex, $result['body'], $rawmatch);
+    for ($i=0; $i < $count; $i++) {
+      $item[$i]['varname'] = trim($rawmatch[1][$i]);
+      $item[$i]['bnum'] = trim($rawmatch[2][$i]);
+      $item[$i]['title'] = trim($rawmatch[3][$i]);
 
       // Parse individual cell data
       preg_match('%name="(.+?)"%s', $item_data['patFuncMark'], $mark_match);
@@ -324,28 +344,37 @@ class iiitools {
         $item[$i]['bnum'] = $title_match[1];
         $item[$i]['ill'] = 0;
       }
-      else {
-        $item[$i]['ill'] = 1;
-      }
-      $item[$i]['title'] = trim(strip_tags($item_data['patFuncTitle']));
-
-      $status = trim($item_data['patFuncStatus']);
-      if ((!preg_match('/of/i', $status)) && (!preg_match('/ready/i', $status)) && (!preg_match('/RECEIVED/i', $status))) {
+      
+      $status = trim($rawmatch[4][$i]);
+      if ((!preg_match('/of/i', $status)) && (!preg_match('/ready/i', $status)) && (!preg_match('/RECEIVED/i', $status))) { 
         $status = "In Transit";
       }
       $item[$i]['status'] = $status;
-
-      $item[$i]['pickuploc'] = trim($item_data['patFuncPickup']);
-
-      if ($item_data['patFuncCancel']) {
-        $item[$i]['canceldate'] = trim($item_data['patFuncCancel']);
+      
+	  $pickup_select = trim($rawmatch[5][$i]);
+	  
+      //preg_match('/select name=(.+?)>/is', $pickup_select, $pickup_var_match);
+	  preg_match('/patFuncPickup(.+?)<\/td>/is', $pickup_select, $pickup_var_match);	  
+	  
+      $select_count = preg_match_all('/option value="(.+?)"(.+?)>(.+?)<\/option>/is', $pickup_select, $pickup_select_var_match);
+      $item[$i]['pickuploc']['selectid'] = trim($pickup_var_match[1]);
+      $item[$i]['pickuploc']['options'] = array();
+      for ($j=0; $j < $select_count; $j++) {
+        $item[$i]['pickuploc']['options'][trim($pickup_select_var_match[1][$j])] = trim($pickup_select_var_match[3][$j]);
+        if (trim($pickup_select_var_match[2][$j])) {
+          $item[$i]['pickuploc']['selected'] = trim($pickup_select_var_match[1][$j]);
+        }
       }
 
-      if ($item_data['patFuncFreeze']) {
-        $item[$i]['is_frozen'] = (strpos($item_data['patFuncFreeze'], 'checked') !== FALSE ? 1 : 0);
-        $item[$i]['can_freeze'] = (strpos($item_data['patFuncFreeze'], 'checkbox') !== FALSE ? 1 : 0);
-        preg_match('/freezeb([0-9]+)/i', $rawmatch[7][$i], $freezematch);
-        $item[$i]['freezevar'] = trim($freezematch[0]);
+      $canceldate = trim(str_replace('&nbsp;', '', $rawmatch[6][$i]));
+      if ($canceldate) {
+        $item[$i]['canceldate'] = $canceldate;
+      }
+      
+      if (preg_match('%type="(.+?)" name="(.+?)"(.+?)/>%s', $rawmatch[7][$i], $freezematch)) {
+        $item[$i]['is_frozen'] = (trim($freezematch[3]) == 'checked') ? 1 : 0;
+        $item[$i]['can_freeze'] = (trim($freezematch[1]) == 'checkbox') ? 1 : 0;
+        $item[$i]['freezevar'] = trim($freezematch[2]);
       } else {
         $item[$i]['is_frozen'] = 0;
         $item[$i]['can_freeze'] = 0;
