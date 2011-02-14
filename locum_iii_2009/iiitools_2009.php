@@ -254,44 +254,44 @@ class iiitools {
    * @return array An array of items checked out.
    */
   public function parse_patron_items($itemlist_raw) {
-    // Grab all patFuncEntry rows
-    $row_count = preg_match_all('%<tr.+?patFuncEntry.+?>(.+?)</tr>%s', $itemlist_raw, $rowmatch);
-    for ($i = 0; $i < $row_count; $i++) {
+    // The original regex was broken. The new one is below, but
+    // regexing html tables is still a very fragile solution.
+    // $regex = '%patFuncEntry(.+?)name="(.+?)" value="i(.+?)"(.+?)patFuncTitle"><a href="/patroninfo~S5/(.+?)/item&(.+?)">(.+?)</a>(.+?)DUE(.+?)<(.+?)CallNo">(.+?)</td>%s';
 
-      // Grab all table cells in the Entry
-      $cellmatch = '';
-      $item_data = array();
-      $cell_count = preg_match_all('%<td.+?class="(.+?)".*?>(.+?)</td>%s', $rowmatch[1][$i], $cellmatch);
-      for ($j = 0; $j < $cell_count; $j++) {
-        $item_data[$cellmatch[1][$j]] = $cellmatch[2][$j];
-      }
+    // The html to be regexed:
+/*
+<tr class="patFuncEntry"><td align="left" class="patFuncMark"><input type="checkbox" name="renew0" id="renew0" value="i1114583" /></td><td align="left" class="patFuncTitle"><label for="renew0"><a href="/record=b1069329~S0"> Beardream / Will Hobbs ; illustrated by Jill Kastner. </a></label>
+<br />
 
-      // Parse individual cell data
-      preg_match('%name="(.+?)".+?value="i(.+?)"%s', $item_data['patFuncMark'], $mark_match);
-      $item[$i]['varname'] = $mark_match[1];
-      $item[$i]['inum'] = $mark_match[2];
+</td>
+<td align="left" class="patFuncBarcode"> 3 1945 00261 8501 </td>
+<td align="left" class="patFuncStatus"> DUE 12-15-10BILLED 
+</td>
+<td align="left" class="patFuncCallNo"> Ju E Hob  </td>
+</tr>
+*/
+    $regex = '%<tr.+patFuncEntry"><td.*><input.*name="(.+)" id=".+" value="i(.+)".*<a href="/record=b(.+)~S0">(.+)</a>.*DUE ([-0-9]{8})(.*)patFuncCallNo">(.+)</td>%sU';
+    $count = preg_match_all($regex, $itemlist_raw, $rawmatch);
+  
+    for ($i=0; $i < $count; $i++) {
+      $item[$i]['varname'] = trim($rawmatch[1][$i]);
+    
+      $item[$i]['inum'] = trim($rawmatch[2][$i]);
+      $item[$i]['bnum'] = trim($rawmatch[3][$i]);
+      $item[$i]['title'] = trim($rawmatch[4][$i]);
 
-      preg_match('%record=b([0-9]{7})%s', $item_data['patFuncTitle'], $title_match);
-      if ($title_match[1]) {
-        $item[$i]['bnum'] = $title_match[1];
-        $item[$i]['ill'] = 0;
-      }
-      else {
-        $item[$i]['ill'] = 1;
-      }
-      $item[$i]['title'] = trim(strip_tags($item_data['patFuncTitle']));
+      // Todo - Talk with AADL about doing this differently.  For now, it's hard-coded to no ILL.
+      $item[$i]['ill'] = 0;
 
-      preg_match('%Renewed ([0-9]+) time%', $item_data['patFuncStatus'], $renew_match);
-      if ($renew_match[1]) {
-        $item[$i]['numrenews'] = $renew_match[1];
-      }
-      else {
+      if (trim($rawmatch[6][$i])) {
+        preg_match('%Renewed (.+?) time%s', $rawmatch[6][$i], $num_renews_raw);
+        $item[$i]['numrenews'] = trim($num_renews_raw[1]) ? trim($num_renews_raw[1]) : 0;
+      } else {
         $item[$i]['numrenews'] = 0;
       }
 
-      preg_match('%DUE ([\d]{2}-[\d]{2}-[\d]{2})%', $item_data['patFuncStatus'], $duedate_match);
-      $item[$i]['duedate'] = self::date_to_timestamp($duedate_match[1]);
-      $item[$i]['callnum'] = trim($item_data['patFuncCallNo']);
+      $item[$i]['duedate'] = self::date_to_timestamp(trim($rawmatch[5][$i]));
+      $item[$i]['callnum'] = trim($rawmatch[11][$i]);
     }
     return $item;
   }
