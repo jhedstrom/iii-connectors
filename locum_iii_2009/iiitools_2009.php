@@ -282,9 +282,8 @@ class iiitools {
 
       // Todo - Talk with AADL about doing this differently.  For now, it's hard-coded to no ILL.
       $item[$i]['ill'] = 0;
-
       if (trim($rawmatch[6][$i])) {
-        preg_match('%Renewed (.+?) time%s', $rawmatch[6][$i], $num_renews_raw);
+        preg_match('%Renewed (.+?) time%sU', $rawmatch[6][$i], $num_renews_raw);
         $item[$i]['numrenews'] = trim($num_renews_raw[1]) ? trim($num_renews_raw[1]) : 0;
       } else {
         $item[$i]['numrenews'] = 0;
@@ -293,6 +292,7 @@ class iiitools {
       $item[$i]['duedate'] = self::date_to_timestamp(trim($rawmatch[5][$i]));
       $item[$i]['callnum'] = trim($rawmatch[11][$i]);
     }
+
     return $item;
   }
 
