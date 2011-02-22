@@ -565,21 +565,23 @@ class iiitools {
    * @return boolean|array Array of checked-out items, their renewal status, and new due date if applicable.
    */
   public function renew_material($renew_arg = 'all') {
-
+    $url_suffix = 'patroninfo~S5/' . $this->pnum . '/items';
     if (is_array($renew_arg)) {
+      $get_args = array('renewsome=YES', 'currentsortorder=current_checkout');
       foreach ($renew_arg as $inum => $varname) {
         if ($inum[0] != 'i') { $inum = 'i' . $inum; }
         $get_args[] = $varname . '=' . $inum;
       }
       $args = implode('&', $get_args);
-      $url_suffix = 'patroninfo~S24/' . $this->pnum . '/items?renewsome=YES&' . $args;
-    } else if (strtolower($renew_arg) == 'all') {
-      $url_suffix = 'patroninfo~S24/' . $this->pnum . '/items?renewall';
     }
-    usleep(300000); // To make sure the record has been freed.
-    $result = self::my_curl_exec($url_suffix);
-    return self::parse_patron_renews($result['body'], $renew_arg);
-
+    elseif (strtolower($renew_arg) == 'all') {
+      $args = 'renewall=YES';
+    }
+    if (isset($args)) {
+      usleep(300000); // To make sure the record has been freed.
+      $result = self::my_curl_exec($url_suffix, $args);
+      return self::parse_patron_renews($result['body'], $renew_arg);
+    }
   }
 
   /**
