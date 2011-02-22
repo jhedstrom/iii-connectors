@@ -42,7 +42,7 @@ class iii_patronapi {
     $api_array_lines = explode("\n", $api_contents);
     while (strlen($api_data['PBARCODE']) < $this->bcode_length && !$api_data['ERRNUM']) {
       foreach ($api_array_lines as $api_line) {
-        $api_line = str_replace("p=", "peq", $api_line);
+        $api_line = str_replace(array("p=", '<BR>'), array("peq", ''), $api_line);
         $api_line_arr = explode("=", $api_line);
         $regex_match = array("/\[(.*?)\]/","/\s/","/#/");
         $regex_replace = array('','','NUM');
