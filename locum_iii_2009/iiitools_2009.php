@@ -370,8 +370,8 @@ class iiitools {
       if ($canceldate) {
         $item[$i]['canceldate'] = $canceldate;
       }
-      
-      if (preg_match('%type="(.+?)" name="(.+?)"(.+?)/>%s', $rawmatch[7][$i], $freezematch)) {
+
+      if (preg_match('%type="(.+?)" name="(.+?)"(.+?)%sU', $rawmatch[7][$i], $freezematch)) {
         $item[$i]['is_frozen'] = (trim($freezematch[3]) == 'checked') ? 1 : 0;
         $item[$i]['can_freeze'] = (trim($freezematch[1]) == 'checkbox') ? 1 : 0;
         $item[$i]['freezevar'] = trim($freezematch[2]);
@@ -466,7 +466,8 @@ class iiitools {
    * @return array my_curl_exec result array
    */
   public function update_holds($cancelholds = array(), $holdfreezes_to_update, $pickup_locations = array()) {
-    $url_suffix = 'patroninfo~S24/' . $this->pnum . '/holds?updateholdssome=YES';
+    $url_suffix = 'patroninfo~S0/' . $this->pnum . '/holds';
+    $post_vars = array('updateholdssome=YES');
 
     $holds = self::get_patron_holds();
 
@@ -493,14 +494,14 @@ class iiitools {
     }
 
     // Queue up cancelations
-    foreach ($cancel_arr as $cancelvar) {
-      $getvars[] = $cancelvar . '=on';
+    foreach ($cancel_arr as $cancelvar => $cancelval) {
+      if ($cancelval) { $post_vars[] = $cancelvar . '=1'; }
     }
 
     // Queue up hold freezes
     foreach ($freeze_arr as $bnum => $freeze) {
       if (!isset($cancelholds[$bnum])) {
-        $getvars[] = 'freezeb' . $bnum . '=' . ((int) $freeze ? 'on' : 'off');
+        $post_vars[] = 'freezeb' . $bnum . '=' . ((int) $freeze ? 'on' : 'off');
       }
     }
 
@@ -508,14 +509,15 @@ class iiitools {
     if (count($pickup_arr)) {
       foreach ($pickup_arr as $bnum => $pickup_sel_arr) {
         if (!isset($cancelholds[$bnum])) {
-          $getvars[] = $pickup_sel_arr['selectid'] . '=' . $pickup_sel_arr['selected'];
+          $post_vars[] = $pickup_sel_arr['selectid'] . '=' . $pickup_sel_arr['selected'];
         }
       }
     }
+    
+    $post_vars = implode('&', $post_vars);
 
-    $url_suffix .= '&' . implode('&', $getvars);
     usleep(300000); // To make sure the record has been freed.
-    $result = self::my_curl_exec($url_suffix);
+    $result = self::my_curl_exec($url_suffix, $post_vars);
     usleep(300000); // To make sure the changes have taken.
     return $result; // TODO make the return info a little more useful - Handle errors, etc
   }
