@@ -495,7 +495,7 @@ class iiitools {
 
     // Queue up cancelations
     foreach ($cancel_arr as $cancelvar => $cancelval) {
-      if ($cancelval) { $post_vars[] = $cancelvar . '=1'; }
+      if ($cancelval) { $post_vars[] = $cancelvar . '=on'; }
     }
 
     // Queue up hold freezes
