@@ -211,7 +211,7 @@ class locum_iii_2009 {
 
     // Call number
     $callnum = '';
-    $callnum_arr = self::prepare_marc_values($bib_info_marc['099'], array('a'));
+    $callnum_arr = self::prepare_marc_values($bib_info_marc['092'], array('a', 'f'));
     if (is_array($callnum_arr) && count($callnum_arr)) {
       foreach ($callnum_arr as $cn_sub) {
         $callnum .= $cn_sub . ' ';
