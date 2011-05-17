@@ -107,7 +107,7 @@ class locum_iii_2009 {
     // Process MARC fields
     // Process Author information
     $bib['author'] = '';
-    $author_arr = self::prepare_marc_values($bib_info_marc['100'], array('a', 'b', 'c', 'd'));
+    $author_arr = self::prepare_marc_values($bib_info_marc['100'], array('a','b','c','q','d'));
     $bib['author'] = $author_arr[0];
 
     // In no author info, we'll go for the 110 field
