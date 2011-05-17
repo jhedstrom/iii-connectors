@@ -1,0 +1,135 @@
+001 > maat      Audio Tape
+002 > maatf     Audio Tape, Fiction
+003 > maatn     Audio Tape, Non-Fiction
+004 > mab       Biography
+005 > macd      CD
+006 > macdc     CD, Classical
+007 > macdd     Playaway portable audio
+008 > macdf     CD, Fiction
+009 > macdn     CD, Non-Fiction
+010 > macdp     CD, Popular
+011 > macdr     CD-ROM
+012 > mad       DVD
+013 > madf      DVD, Feature
+014 > madn      DVD, Non-fiction
+015 > madw      World Cinema Collection
+016 > mae       Downloadable Audiobooks
+017 > maen      Downloadable E-Book
+018 > maf       Fiction
+019 > mafb      Book Group Collection
+020 > mafm      Mystery Collection
+021 > mafn      New Book Shelf, Fiction
+022 > mafns     Express Collection Fiction
+023 > mafpb     Paperback, Fiction
+024 > mafw      AWARD WINNER COLLECTION
+025 > maill     Interlibrary Loan
+026 > mal       Language Collection
+027 > mala      Language Collection, Audio
+028 > malbe     ESL Collection
+029 > malbu     Literacy Collection
+030 > malc      Language Collection, CD
+031 > malff     Language Collection- French Fiction
+032 > malfn     Language Collection- French Non-Fiction
+033 > malgf     Language Collection- German Fiction
+034 > malgn     Language Collection- German Non-Fiction
+035 > mali      Italian Collection
+036 > malia     Italian Collection, Audio
+037 > malic     Italian Collection, CD
+038 > malif     Italian Collection, Fiction
+039 > malin     Italian Collection, Non-Fiction
+040 > maliv     Italian Collection
+041 > maljf     Language Collection- Japanese Fiction
+042 > maljn     Language Collection- Japanese Non-Fiction
+043 > malp      Large Print
+044 > malpf     Large Print, Fiction
+045 > malpn     Large Print, Non-Fiction
+046 > malrf     Language Collection- Russian Fiction
+047 > malrn     Language Collection- Russian Non-Fiction
+048 > mals      Spanish Collection
+049 > malsa     Spanish Collection, Audio
+050 > malsc     Spanish Collection, CD
+051 > malsf     Spanish Collection, Fiction
+052 > malsn     Spanish Collection, Non-Fiction
+053 > malsv     Spanish Collection,  Video
+054 > malv      Language Collection, Video
+055 > malzf     Language Collection- Chinese Fiction
+056 > malzn     Language Collection- Chinese Non-Fiction
+057 > man       Non-Fiction
+058 > manb      Book Group Collection
+059 > manj      New Jersey Collection
+060 > manjp     Princeton Collection
+061 > mann      New Books, Non-Fiction
+062 > manns     Express Collection Non-Fiction
+063 > manpb     Paperback, Non-Fiction
+064 > manr      Christopher Reeve Collection
+065 > mant      Travel Collection
+066 > manw      AWARD WINNER COLLECTION
+067 > marb      Robeson Collection
+068 > mare      Reference
+069 > marec     Consumer Reference
+070 > maref     Reference
+071 > marep     Princeton Collection
+072 > maum      Uncataloged material
+073 > mav       Video
+074 > mavf      Video, Feature
+075 > mavn      Video, Non-Fiction
+076 > may       Teen
+077 > mayat     Teen Audio
+078 > mayc      Teen CD Collection
+079 > maycf     Teen CD Collection
+080 > maycn     Teen CD Collection, Non-F
+081 > maycr     Teen CD-ROM
+082 > mayd      Teen DVD Collection
+083 > maydf     Teen DVD Collection
+084 > maydn     Teen DVD Collection
+085 > mayf      Teen, Fiction
+086 > maynf     Teen, Non-Fiction
+087 > maypb     Teen Paperback
+088 > mayr      Teen Reference Collection
+089 > mays      Teen School Reading Lists
+090 > maysp     Teen Spanish Collection
+091 > mayv      Teen Video Collection
+092 > mayvf     Teen Video Collection
+093 > mayvn     Teen Video Collection
+094 > mjac      Children's CD
+095 > mjacf     Children's CD, Fiction
+096 > mjacn     Children's CD, Non-Fictio
+097 > mjacr     Children's CD-ROM
+098 > mjad      Children's DVD
+099 > mjade     Children's DVD, E
+100 > mjadf     Children's DVD, Feature
+101 > mjadh     Children's DVD, Holiday
+102 > mjadn     Children's DVD, Non-Ficti
+103 > mjat      Children's Audio Tape
+104 > mjate     Children's Audio Tape, E
+105 > mjatf     Children's Audio Tape, Fiction
+106 > mjatn     Children's Audio Tape, Non-Fiction
+107 > mjav      Children's Video
+108 > mjave     Children's Video- Easy
+109 > mjavf     Children's Video- Fiction
+110 > mjavn     Children's Video- Non-Fiction
+111 > mjavs     Children's Video
+112 > mjbi      Children's Biography
+113 > mjbt      Children's Easy Reading
+114 > mje       Children's Picture Book
+115 > mjf       Children's Fiction
+116 > mjh       Children's Holiday
+117 > mjl       Children's Language
+118 > mjli      Children's Italian
+119 > mjlp      Children's Large Print
+120 > mjlpf     Children's Large Print
+121 > mjlpn     Children's Large Print
+122 > mjls      Children's Spanish
+123 > mjn       Children's Non-Fiction
+124 > mjp       Children's Professional
+125 > mjpa      Parenting Collection Youth Services
+126 > mjpb      Children's Paperback
+127 > mjr       Children's Reference
+128 > mjrp      Children's Professional
+129 > mp        Lending Services
+130 > mppl      Lending Services
+131 > mppla     Adult Collection
+132 > mpplj     Children's Collection
+133 > mpplm     Mail Delivery
+134 > mpplv     Video Game Collection
+135 > zzzzz     Location not available
