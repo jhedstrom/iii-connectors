@@ -263,7 +263,7 @@ class locum_iii_2009 {
     $bib['cover_img'] = '';
     if ($skip_cover != TRUE) {
       if ($bib['stdnum']) {
-        $bib['cover_img'] = locum_server::get_cover_img($bib[stdnum]);
+        $bib['cover_img'] = locum_server::get_cover_img($bib['stdnum']);
       }
     }
 
