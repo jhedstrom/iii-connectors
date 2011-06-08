@@ -100,7 +100,7 @@ class locum_iii_2009 {
       }
     }
     // Suppression codes but in 2009 the record is actually not returned
-    if ($bib['bcode3'] == 'n' || $bib['bcode3'] == 'd' || $bib['bcode3'] == 'p'){
+    if (isset($bib['bcode3']) && ($bib['bcode3'] == 'n' || $bib['bcode3'] == 'd' || $bib['bcode3'] == 'p')) {
       return FALSE;
     }
     // Process MARC fields
@@ -161,19 +161,19 @@ class locum_iii_2009 {
     if (isset($bib_info_marc['245'])) {
       $volume = self::prepare_marc_values($bib_info_marc['245'], array('n'));
       $disc = self::prepare_marc_values($bib_info_marc['245'], array('p'));
-      if (substr($disc[0], -1) == '/') {
+      if (isset($disc[0]) && substr($disc[0], -1) == '/') {
         $disc[0] = trim(substr($disc[0], 0, -1));
       }
-      if (substr($volume[0], -1) == '/') {
+      if (isset($volume[0]) && substr($volume[0], -1) == '/') {
         $volume[0] = trim(substr($volume[0], 0, -1));
       }
-      if ($volume[0] && $disc[0]) {
+      if (!empty($volume[0]) && !empty($disc[0])) {
         $bib['title_medium'] = $volume[0] . " " . $disc[0];
       }
-      else if ($volume[0]) {
+      else if (!empty($volume[0])) {
         $bib['title_medium'] = $volume[0];
       }
-      else {
+      elseif (!empty($disc[0])) {
         $bib['title_medium'] = $disc[0];
       }
     }
@@ -287,7 +287,7 @@ class locum_iii_2009 {
     $bib['stdnum'] = '';
     if (isset($bib_info_marc['020'])) {
       $stdnum = self::prepare_marc_values($bib_info_marc['020'], array('a'));
-      $bib['stdnum'] = $stdnum;
+      $bib['stdnum'] = is_array($stdnum) ? $stdnum[0] : $stdnum;
     }
 
     // UPC
@@ -682,7 +682,7 @@ class locum_iii_2009 {
    */
   public function prepare_marc_values($value_arr, $subfields, $delimiter = ' ') {
     // Initialize some variables.
-    $i = $mark_values = $pad = array();
+    $i = $marc_values = $pad = $result = array();
 
     // Repeatable values can be returned as an array or a serialized value
     foreach ($subfields as $subfield) {
@@ -692,7 +692,7 @@ class locum_iii_2009 {
 
           if (is_array($subvalue)) {
             foreach ($subvalue as $sub_subvalue) {
-              if ($i[$subkey]) { $pad[$subkey] = $delimiter; }
+              if (!empty($i[$subkey])) { $pad[$subkey] = $delimiter; }
               $sv_tmp = trim($sub_subvalue);
               $matches = array();
               preg_match_all('/\{u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]\}/', $sv_tmp, $matches);
@@ -701,11 +701,16 @@ class locum_iii_2009 {
                 $character = html_entity_decode("&#$code;", ENT_NOQUOTES, 'UTF-8');
                 $sv_tmp = str_replace($match_string, $character, $sv_tmp);
               }
-              if (trim($sub_subvalue)) { $marc_values[$subkey] .= $pad[$subkey] . $sv_tmp; }
+              if (trim($sub_subvalue)) {
+                if (!isset($marc_values[$subkey])) {
+                  $marc_values[$subkey] = '';
+                }
+                $marc_values[$subkey] .= (isset($pad[$subkey]) ? $pad[$subkey] : '') . $sv_tmp;
+              }
               $i[$subkey] = 1;
             }
           } else {
-            if ($i[$subkey]) { $pad[$subkey] = $delimiter; }
+            if (!empty($i[$subkey])) { $pad[$subkey] = $delimiter; }
 
             // Process unicode for diacritics
             $sv_tmp = trim($subvalue);
@@ -717,7 +722,12 @@ class locum_iii_2009 {
               $sv_tmp = str_replace($match_string, $character, $sv_tmp);
             }
 
-            if (trim($subvalue)) { $marc_values[$subkey] .= $pad[$subkey] . $sv_tmp; }
+            if (trim($subvalue)) {
+              if (!isset($marc_values[$subkey])) {
+                $marc_values[$subkey] = '';
+              }
+              $marc_values[$subkey] .= (isset($pad[$subkey]) ? $pad[$subkey] : '') . $sv_tmp;
+            }
             $i[$subkey] = 1;
           }
         }
